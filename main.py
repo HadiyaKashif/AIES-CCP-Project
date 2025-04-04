@@ -200,30 +200,30 @@ PINECONE_INDEX_NAME = "rag-practice"
 
 # Initialize Pinecone
 pc = Pinecone(api_key=PINECONE_API_KEY)
-# if PINECONE_INDEX_NAME not in pc.list_indexes().names():
-#     pc.create_index(
-#         name=PINECONE_INDEX_NAME,
-#         dimension=768,
-#         metric="cosine",
-#         spec=ServerlessSpec(cloud="aws", region="us-east-1")
-#     )
-
-# Check if the index exists, delete it if found
-if PINECONE_INDEX_NAME in pc.list_indexes().names():
-    print(f"Deleting existing Pinecone index: {PINECONE_INDEX_NAME} ...")
-    pc.delete_index(PINECONE_INDEX_NAME)
-    print("Index deleted successfully.")
-
-# Check and create index if it doesn't exist
 if PINECONE_INDEX_NAME not in pc.list_indexes().names():
-    print("Creating Pinecone index...")
     pc.create_index(
         name=PINECONE_INDEX_NAME,
         dimension=768,
         metric="cosine",
         spec=ServerlessSpec(cloud="aws", region="us-east-1")
     )
-    print("Pinecone index setup complete.")
+
+# Check if the index exists, delete it if found
+# if PINECONE_INDEX_NAME in pc.list_indexes().names():
+#     print(f"Deleting existing Pinecone index: {PINECONE_INDEX_NAME} ...")
+#     pc.delete_index(PINECONE_INDEX_NAME)
+#     print("Index deleted successfully.")
+
+# # Check and create index if it doesn't exist
+# if PINECONE_INDEX_NAME not in pc.list_indexes().names():
+#     print("Creating Pinecone index...")
+#     pc.create_index(
+#         name=PINECONE_INDEX_NAME,
+#         dimension=768,
+#         metric="cosine",
+#         spec=ServerlessSpec(cloud="aws", region="us-east-1")
+#     )
+#     print("Pinecone index setup complete.")
 
 # Initialize Gemini components
 gemini_embeddings = GoogleGenerativeAIEmbeddings(
