@@ -1,41 +1,39 @@
-/* Global Styles */
+/*
+ * SmartSage - Modern Space Theme Stylesheet
+ * A cosmic-inspired design system with ethereal gradients and stellar interactions
+ */
+
 :root {
-    /* Space Theme Colors */
-    --deep-space: #0B1026;      /* Deep space background */
-    --cosmic-blue: #2C4C8C;     /* Rich cosmic blue */
-    --nebula-purple: #9B8AC0;   /* Lighter nebula purple */
-    --star-blue: #8BABD3;       /* Light star blue */
-    --cosmic-dust: #E6E9F0;     /* Light cosmic dust */
-    --aurora-green: #71B48D;    /* Subtle aurora accent */
-    --light-purple: #B3A2D8;    /* Even lighter purple */
+    --deep-space: #0B1026;
+    --cosmic-blue: #2C4C8C;
+    --nebula-purple: #584177;
+    --star-blue: #8BABD3;
+    --cosmic-dust: #E6E9F0;
+    --aurora-green: #71B48D;
+    --light-purple: #7B6A9B;
     
-    /* Derived Colors */
-    --space-glow: rgba(139, 171, 211, 0.15);  /* Star blue glow */
-    --nebula-glow: rgba(155, 138, 192, 0.2);   /* Lighter purple nebula glow */
-    --cosmic-shadow: rgba(11, 16, 38, 0.3);    /* Space shadow */
-    --purple-gradient: linear-gradient(135deg, #B3A2D8, #9B8AC0);  /* Purple gradient */
+    --space-glow: rgba(139, 171, 211, 0.15);
+    --nebula-glow: rgba(88, 65, 119, 0.3);
+    --cosmic-shadow: rgba(11, 16, 38, 0.3);
+    --purple-gradient: linear-gradient(135deg, #7B6A9B, #584177);
     
-    /* Theme Colors */
     --primary-color: var(--cosmic-blue);
     --secondary-color: var(--star-blue);
     --accent-color: var(--light-purple);
     --background-color: var(--deep-space);
     
-    /* Functional Colors */
     --success-color: var(--aurora-green);
-    --danger-color: #D64C78;    /* Cosmic red */
+    --danger-color: #D64C78;
     --text-color: var(--cosmic-dust);
-    --text-muted: #8B97B3;      /* Muted starlight */
+    --text-muted: #8B97B3;
     --border-color: var(--cosmic-blue);
-    --surface-color: rgba(44, 76, 140, 0.2);  /* Transparent cosmic blue */
+    --surface-color: rgba(44, 76, 140, 0.2);
     
-    /* Message Colors */
     --user-message-bg: var(--cosmic-blue);
     --user-message-border: var(--star-blue);
     --assistant-message-bg: var(--nebula-purple);
     --assistant-message-border: var(--cosmic-dust);
     
-    /* Spacing */
     --border-radius: 12px;
     --transition-speed: 0.3s;
     --sidebar-width: 260px;
@@ -68,8 +66,8 @@ body {
 
 .assistant-message {
     background: linear-gradient(135deg,
-        rgba(179, 162, 216, 0.4) 0%,
-        rgba(179, 162, 216, 0.2) 100%);
+        rgba(88, 65, 119, 0.6) 0%,
+        rgba(88, 65, 119, 0.4) 100%);
     color: var(--text-color);
     border-left: 4px solid var(--cosmic-dust);
 }
@@ -86,15 +84,15 @@ body {
 /* Sidebar styling */
 .sidebar {
     background: linear-gradient(180deg, 
-        rgba(44, 76, 140, 0.3) 0%,
-        rgba(155, 138, 192, 0.3) 100%);
+        rgba(44, 76, 140, 0.4) 0%,
+        rgba(88, 65, 119, 0.4) 100%);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(139, 171, 211, 0.2);
     box-shadow: 0 8px 32px var(--cosmic-shadow);
-    padding: 16px;
+    padding: 8px;
     border-radius: var(--border-radius);
-    height: calc(100vh - 2rem);
+    height: calc(100vh - 1rem);
     position: sticky;
     top: 1rem;
     overflow-y: auto;
@@ -109,15 +107,22 @@ body {
 }
 
 .sidebar .form-label {
-    font-size: 0.9rem;
-    margin-bottom: 0.3rem;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
 }
 
 .sidebar .btn {
-    border-radius: 6px;
-    padding: 0.4rem 0.8rem;
-    transition: all var(--transition-speed) ease;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+    margin-bottom: 0.5rem;
+}
+
+.sidebar .btn-group {
+    margin-bottom: 0.5rem;
+}
+
+.sidebar .form-group {
+    margin-bottom: 0.75rem;
 }
 
 .sidebar .btn-primary {
@@ -169,24 +174,17 @@ body {
 }
 
 .sidebar .form-check {
-    margin-bottom: 0;
+    margin-bottom: 0.25rem;
 }
 
 .sidebar .form-check-label {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
 }
 
 .sidebar .form-check-input {
     width: 0.9rem;
     height: 0.9rem;
-    margin-top: 0.25rem;
-    background-color: var(--surface-color);
-    border-color: var(--border-color);
-}
-
-.sidebar .form-check-input:checked {
-    background-color: var(--cosmic-blue);
-    border-color: var(--star-blue);
+    margin-top: 0.2rem;
 }
 
 .sidebar hr {
@@ -319,12 +317,12 @@ tr:nth-child(even) {
 
 /* Chat Container Styles */
 .chat-container {
-    height: 50vh;
+    height: calc(100vh - 250px);
     overflow-y: auto;
     padding: 20px;
     background: linear-gradient(135deg,
-        rgba(44, 76, 140, 0.2) 0%,
-        rgba(155, 138, 192, 0.2) 100%);
+        rgba(44, 76, 140, 0.3) 0%,
+        rgba(88, 65, 119, 0.3) 100%);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(139, 171, 211, 0.2);
@@ -354,18 +352,16 @@ tr:nth-child(even) {
 
 /* Notes Drawer Styles */
 .notes-drawer {
+    background: linear-gradient(to left,
+        var(--deep-space) 0%,
+        rgba(88, 65, 119, 0.95) 100%);
+    border-left: 1px solid var(--star-blue);
+    box-shadow: -8px 0 32px var(--cosmic-shadow);
     position: fixed;
     right: -400px;
     top: 0;
     width: 400px;
     height: 100vh;
-    background: linear-gradient(to left,
-        rgba(44, 76, 140, 0.3) 0%,
-        rgba(155, 138, 192, 0.3) 100%);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-left: 1px solid rgba(139, 171, 211, 0.2);
-    box-shadow: -8px 0 32px var(--cosmic-shadow);
     transition: right var(--transition-speed) ease;
     z-index: 1000;
     padding: 2rem;
@@ -560,7 +556,11 @@ hr {
     }
     
     .chat-container {
-        height: 40vh;
+        height: calc(100vh - 200px);
+    }
+    
+    .chat-input-container {
+        left: 0;
     }
 }
 
@@ -625,7 +625,7 @@ hr {
 }
 
 .alert-warning {
-    background-color: rgba(179, 162, 216, 0.2);
+    background-color: rgba(88, 65, 119, 0.3);
     border-left: 4px solid var(--light-purple);
     color: var(--text-color);
 }
@@ -671,4 +671,36 @@ input[type="file"]::-webkit-file-upload-button {
 input[type="file"]::-webkit-file-upload-button:hover {
     background: linear-gradient(135deg, var(--light-purple), var(--cosmic-blue));
     transform: translateY(-1px);
+}
+
+.sidebar input[type="file"] {
+    font-size: 0.75rem;
+    max-width: 180px;
+}
+
+.sidebar input[type="file"]::-webkit-file-upload-button {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Fixed Chat Input */
+.chat-input-container {
+    position: fixed;
+    bottom: 0;
+    left: var(--sidebar-width);
+    right: 0;
+    background: linear-gradient(180deg,
+        rgba(11, 16, 38, 0.8) 0%,
+        var(--deep-space) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+    z-index: 999;
+}
+
+.chat-input-container .input-group {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem;
 } 
