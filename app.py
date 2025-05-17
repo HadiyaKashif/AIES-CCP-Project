@@ -22,6 +22,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max upload size
 app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'
 app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_PERMANENT'] = False
 
 # Set session type to filesystem to prevent browser persistence
 from flask_session import Session
@@ -34,6 +35,16 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 
 # Initialize Pinecone index
 initialize_pinecone()
+
+@app.route('/clear-session', methods=['POST'])
+def clear_session():
+    """Force-clear the session for new browser sessions"""
+    session.clear()
+    session['initialized'] = True  # Reinitialize fresh session
+    session['messages'] = []
+    session['processed'] = False
+    session['rich_notes'] = ""
+    return jsonify({'success': True})
 
 @app.before_request
 def initialize_session():
@@ -51,27 +62,27 @@ def initialize_session():
         session['score'] = 0
         session['challenge_mode'] = False
         session['show_answer'] = False
-    else:
-        if 'messages' not in session:
-            session['messages'] = []
-        if 'processed' not in session:
-            session['processed'] = False
-        if 'rich_notes' not in session:
-            session['rich_notes'] = ""
-        if 'show_notes' not in session:
-            session['show_notes'] = False
-        if 'flashcards' not in session:
-            session['flashcards'] = []
-        if 'flash_index' not in session:
-            session['flash_index'] = 0
-        if 'wrong_flashcards' not in session:
-            session['wrong_flashcards'] = []
-        if 'score' not in session:
-            session['score'] = 0
-        if 'challenge_mode' not in session:
-            session['challenge_mode'] = False
-        if 'show_answer' not in session:
-            session['show_answer'] = False
+    # else:
+    #     if 'messages' not in session:
+    #         session['messages'] = []
+    #     if 'processed' not in session:
+    #         session['processed'] = False
+    #     if 'rich_notes' not in session:
+    #         session['rich_notes'] = ""
+    #     if 'show_notes' not in session:
+    #         session['show_notes'] = False
+    #     if 'flashcards' not in session:
+    #         session['flashcards'] = []
+    #     if 'flash_index' not in session:
+    #         session['flash_index'] = 0
+    #     if 'wrong_flashcards' not in session:
+    #         session['wrong_flashcards'] = []
+    #     if 'score' not in session:
+    #         session['score'] = 0
+    #     if 'challenge_mode' not in session:
+    #         session['challenge_mode'] = False
+    #     if 'show_answer' not in session:
+    #         session['show_answer'] = False
 
 @app.route('/')
 def index():

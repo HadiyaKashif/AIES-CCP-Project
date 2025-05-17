@@ -159,6 +159,20 @@
         $.post('/toggle-notes');
     });
     
+    document.addEventListener('DOMContentLoaded', function() {
+    // Check if this is a fresh browser session
+    if (!sessionStorage.getItem('sessionInitialized')) {
+        // Clear server-side session
+        fetch('/clear-session', { method: 'POST' })
+            .then(() => {
+                // Set client-side marker
+                sessionStorage.setItem('sessionInitialized', 'true');
+                // Refresh to ensure clean state
+                window.location.reload();
+            });
+        }
+    });
+
     // Save notes
     $('#saveNotesBtn').click(function() {
         const notesContent = quill.root.innerHTML;
