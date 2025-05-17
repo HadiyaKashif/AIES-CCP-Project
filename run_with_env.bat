@@ -1,0 +1,6 @@
+@echo off
+set PINECONE_API_KEY=pcsk_5yDKu_UB67E9sGFh3FzXJEu7irYDLonXpPRiHBCyvqBwzwsEqhaYsni3arKjMTG7PSMRe
+set GEMINI_API_KEY=AIzaSyALsCaAxP3X_JM1ZAgOxMNWCzbgwl1_X3o
+set GOOGLE_API_KEY=AIzaSyAmMMpS79X3z5nbj6wh0dsIXfe_031V98k
+set GOOGLE_CSE_ID=576dfbf65794e430d
+python app.py 
