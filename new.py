@@ -23,9 +23,11 @@ from collections import defaultdict
 from typing import List
 from fpdf import FPDF
 import time
+from streamlit_quill import st_quill
+from fpdf import FPDF
+import time
 import json
 import datetime
-from streamlit_quill import st_quill
 from io import BytesIO
 
 st.set_page_config(page_title="Advanced Gemini RAG System", page_icon="🤖")
@@ -51,6 +53,7 @@ if "rich_notes" not in st.session_state:
     st.session_state.rich_notes = ""
 if "show_notes" not in st.session_state:
     st.session_state.show_notes = False 
+
 
 # Floating Notes Button
 float_style = """
@@ -79,8 +82,7 @@ with st.container():
 
 def initialize_pinecone():
     try:
-        existing_indexes = pc.list_indexes().names()
-        
+        existing_indexes = pc.list_indexes().names()  
         if PINECONE_INDEX_NAME not in existing_indexes:
             st.warning("Creating new Pinecone index... (may take 1-2 minutes)")
             pc.create_index(
@@ -89,8 +91,6 @@ def initialize_pinecone():
                 metric="cosine",
                 spec=ServerlessSpec(cloud="aws", region="us-east-1")
             )
-            
-            # Wait for index to be ready
             with st.spinner("Waiting for index to be ready..."):
                 while True:
                     try:
@@ -99,11 +99,9 @@ def initialize_pinecone():
                             break
                         time.sleep(5)
                     except Exception as e:
-                        time.sleep(5)
-            
+                        time.sleep(5)            
             st.success("Index created and ready to use!")
         else:
-            # Check readiness for existing index
             with st.spinner("Checking index status..."):
                 while True:
                     try:
@@ -113,13 +111,10 @@ def initialize_pinecone():
                         time.sleep(5)
                     except Exception as e:
                         time.sleep(5)
-
             st.info(f"Using existing index: {PINECONE_INDEX_NAME}")
-
             if "cleared_on_startup" not in st.session_state:
                 clear_index()
                 st.session_state.cleared_on_startup = True
-            
     except Exception as e:
         st.error(f"Pinecone initialization failed: {str(e)}")
         st.stop()
@@ -158,7 +153,7 @@ def process_text_data(text_data, source):
                     splits, gemini_embeddings, index_name=PINECONE_INDEX_NAME, namespace="default")
             else:
                 st.session_state.vector_store.add_documents(splits)
-            st.success(f"✅ Processed {len(splits)} chunks from {source}")
+            st.success(f"Processed {len(splits)} chunks from {source}")
             st.session_state.processed = True
         except Exception as e:
             st.error(f"Vector store error: {str(e)}")
@@ -245,7 +240,7 @@ def export_chat_history(history, fmt):
     elif fmt == "pdf":
         pdf_bytes = generate_chat_pdf(history)
         return pdf_bytes, "application/pdf", f"{base_name}.pdf"
-
+    
 # UI
 st.title("🤖 Advanced Gemini RAG System")
 st.caption("Now with RAG-Fusion, Multi-Query, Decomposition + Notes")
@@ -349,9 +344,11 @@ if st.session_state.show_notes:
     # PDF Download Section
     if st.button("💾 Download Notes as PDF"):
         if st.session_state.rich_notes:
+        # Step 1: Clean HTML to plain text
             soup = BeautifulSoup(st.session_state.rich_notes, "html.parser")
             clean_text = soup.get_text()
 
+        # Step 2: Generate PDF
             pdf = FPDF()
             pdf.add_page()
             pdf.set_auto_page_break(auto=True, margin=15)
@@ -360,12 +357,14 @@ if st.session_state.show_notes:
             for line in clean_text.split("\n"):
                 pdf.multi_cell(0, 10, line)
 
+        # Step 3: Use BytesIO to stream PDF for download
             pdf_buffer = io.BytesIO()
-            pdf_string = pdf.output(dest='S').encode('latin1')
+            pdf_string = pdf.output(dest='S')
             pdf_buffer = BytesIO()
             pdf_buffer.write(pdf_string)
             pdf_buffer.seek(0)
 
+        # Step 4: Download button
             st.download_button(
                 label="📄 Confirm Download",
                 data=pdf_buffer,
