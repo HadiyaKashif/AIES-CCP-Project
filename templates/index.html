@@ -234,6 +234,7 @@
     
     // Load existing messages on page load
     function loadMessages() {
+        $('#chatMessages').empty(); // Always clear messages first
         fetch('/messages')
             .then(response => response.json())
             .then(data => {
@@ -243,11 +244,15 @@
                     });
                 }
             })
-            .catch(error => console.error('Error loading messages:', error));
+            .catch(error => {
+                console.error('Error loading messages:', error);
+                $('#chatMessages').empty(); // Clear on error
+            });
     }
     
     // Load notes on page load
     function loadNotes() {
+        quill.setContents([]); // Always clear notes first
         fetch('/notes')
             .then(response => response.json())
             .then(data => {
@@ -259,7 +264,10 @@
                     $('#toggleNotesBtn').addClass('open');
                 }
             })
-            .catch(error => console.error('Error loading notes:', error));
+            .catch(error => {
+                console.error('Error loading notes:', error);
+                quill.setContents([]); // Clear on error
+            });
     }
     
     // Initialize

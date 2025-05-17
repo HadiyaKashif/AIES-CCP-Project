@@ -18,6 +18,14 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default-secret-key')
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max upload size
+app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+
+# Set session type to filesystem to prevent browser persistence
+from flask_session import Session
+app.config['SESSION_TYPE'] = 'filesystem'
+Session(app)
 
 # Create upload folder if it doesn't exist
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
@@ -28,14 +36,23 @@ initialize_pinecone()
 
 @app.before_request
 def initialize_session():
-    if 'messages' not in session:
+    # Clear session on new browser session
+    if 'initialized' not in session:
+        session.clear()
+        session['initialized'] = True
         session['messages'] = []
-    if 'processed' not in session:
         session['processed'] = False
-    if 'rich_notes' not in session:
         session['rich_notes'] = ""
-    if 'show_notes' not in session:
         session['show_notes'] = False
+    else:
+        if 'messages' not in session:
+            session['messages'] = []
+        if 'processed' not in session:
+            session['processed'] = False
+        if 'rich_notes' not in session:
+            session['rich_notes'] = ""
+        if 'show_notes' not in session:
+            session['show_notes'] = False
 
 @app.route('/')
 def index():
