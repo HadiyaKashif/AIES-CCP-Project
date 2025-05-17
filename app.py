@@ -12,6 +12,7 @@ from document_processing import process_documents, scrape_website, process_text_
 from vector_store import initialize_pinecone, clear_index, get_vector_store
 from rag_techniques import reciprocal_rank_fusion, generate_query_variations, generate_reasoning_steps, generate_sub_questions
 from web_scrapping import search_google
+from components.flashcards import generate_flashcards_from_text
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -44,6 +45,12 @@ def initialize_session():
         session['processed'] = False
         session['rich_notes'] = ""
         session['show_notes'] = False
+        session['flashcards'] = []
+        session['flash_index'] = 0
+        session['wrong_flashcards'] = []
+        session['score'] = 0
+        session['challenge_mode'] = False
+        session['show_answer'] = False
     else:
         if 'messages' not in session:
             session['messages'] = []
@@ -53,6 +60,18 @@ def initialize_session():
             session['rich_notes'] = ""
         if 'show_notes' not in session:
             session['show_notes'] = False
+        if 'flashcards' not in session:
+            session['flashcards'] = []
+        if 'flash_index' not in session:
+            session['flash_index'] = 0
+        if 'wrong_flashcards' not in session:
+            session['wrong_flashcards'] = []
+        if 'score' not in session:
+            session['score'] = 0
+        if 'challenge_mode' not in session:
+            session['challenge_mode'] = False
+        if 'show_answer' not in session:
+            session['show_answer'] = False
 
 @app.route('/')
 def index():
@@ -361,6 +380,71 @@ def debug():
     }
     
     return jsonify(api_status)
+
+@app.route('/flashcards')
+def flashcards():
+    return render_template('flashcards.html')
+
+@app.route('/generate-flashcards', methods=['POST'])
+def generate_flashcards():
+    if not session.get('processed', False):
+        flash('Please process some documents first', 'error')
+        return redirect(url_for('flashcards'))
+    
+    try:
+        vector_store = get_vector_store()
+        docs = vector_store.similarity_search("summary", k=20)
+        full_text = " ".join([doc.page_content for doc in docs])
+        
+        flashcards = generate_flashcards_from_text(full_text)
+        session['flashcards'] = flashcards
+        session['flash_index'] = 0
+        session['wrong_flashcards'] = []
+        session['score'] = 0
+        session['show_answer'] = False
+        
+        flash('Flashcards generated successfully!', 'success')
+    except Exception as e:
+        flash(f'Error generating flashcards: {str(e)}', 'error')
+    
+    return redirect(url_for('flashcards'))
+
+@app.route('/next-flashcard', methods=['POST'])
+def next_flashcard():
+    action = request.form.get('action')  # 'knew' or 'didnt_know'
+    
+    if action == 'knew':
+        session['score'] = session.get('score', 0) + 1
+    elif action == 'didnt_know':
+        current_card = session['flashcards'][session['flash_index']]
+        session['wrong_flashcards'] = session.get('wrong_flashcards', []) + [current_card]
+    
+    session['flash_index'] = session.get('flash_index', 0) + 1
+    session['show_answer'] = False
+    
+    # If done with all cards
+    if session['flash_index'] >= len(session['flashcards']):
+        if session.get('wrong_flashcards'):
+            session['flashcards'] = session['wrong_flashcards']
+            session['wrong_flashcards'] = []
+            session['flash_index'] = 0
+            flash('Repeating the cards you missed!', 'info')
+        else:
+            flash(f'Game complete! Final score: {session["score"]}', 'success')
+            session['flashcards'] = []
+            session['flash_index'] = 0
+    
+    return redirect(url_for('flashcards'))
+
+@app.route('/toggle-answer', methods=['POST'])
+def toggle_answer():
+    session['show_answer'] = not session.get('show_answer', False)
+    return redirect(url_for('flashcards'))
+
+@app.route('/toggle-challenge-mode', methods=['POST'])
+def toggle_challenge_mode():
+    session['challenge_mode'] = not session.get('challenge_mode', False)
+    return redirect(url_for('flashcards'))
 
 if __name__ == '__main__':
     app.run(debug=True) 
