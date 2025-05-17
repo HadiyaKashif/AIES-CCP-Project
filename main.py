@@ -206,6 +206,12 @@ if prompt := st.chat_input("Ask about your documents..."):
                 except Exception as e:
                     st.error(f"Error generating answer: {str(e)}")
 
+tabs = st.tabs(["📄 Chat", "📘 Flashcards"])
+
+with tabs[1]:  # Flashcard Tab
+    from components.flashcards import flashcard_ui
+    flashcard_ui()
+
 # Notes Section
 if st.session_state.show_notes:
     with st.expander("📝 Notes Editor", expanded=True):
