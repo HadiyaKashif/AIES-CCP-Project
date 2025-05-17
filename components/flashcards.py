@@ -1,153 +1,22 @@
-import streamlit as st
 import time
+from flask import session, flash, redirect, url_for
+from typing import List, Dict, Any, Optional
+from components.utils import gemini_llm, get_session_value, set_session_value, flash_message, init_session_vars
 
-def flashcard_ui():
-    # Initialize session state variables
-    for key, default in {
+def init_flashcard_session() -> None:
+    """Initialize flashcard-related session variables."""
+    init_session_vars({
         "flashcards": [],
         "flash_index": 0,
         "wrong_flashcards": [],
         "score": 0,
         "start_time": time.time(),
         "challenge_mode": False,
-        "generate_flashcards": False,
         "show_answer": False
-    }.items():
-        if key not in st.session_state:
-            st.session_state[key] = default
+    })
 
-    st.markdown("<h1 style='text-align:center; margin-bottom:1rem;'>🧠 Flashcard Game</h1>", unsafe_allow_html=True)
-
-    # Challenge mode toggle
-    with st.expander("⚙️ Settings"):
-        st.session_state.challenge_mode = st.toggle("⏱️ Enable Challenge Mode (15s per card)", value=st.session_state.challenge_mode)
-
-    st.markdown("---")
-
-    # Generate flashcards button
-    if st.button("📄 Generate Flashcards from Context"):
-        st.session_state.generate_flashcards = True
-
-    if st.session_state.generate_flashcards:
-        if "vector_store" in st.session_state:
-            docs = st.session_state.vector_store.similarity_search("summary", k=20)
-            full_text = " ".join([doc.page_content for doc in docs])
-            st.session_state.flashcards = generate_flashcards_from_text(full_text)
-            st.session_state.flash_index = 0
-            st.session_state.wrong_flashcards = []
-            st.session_state.score = 0
-            st.session_state.start_time = time.time()
-            st.session_state.show_answer = False
-            st.session_state.generate_flashcards = False
-            st.success("✅ Flashcards created!")
-            st.rerun()
-        else:
-            st.warning("❗ Please upload documents first.")
-            st.session_state.generate_flashcards = False
-
-    # Main flashcard display
-    if st.session_state.flashcards:
-        cards = st.session_state.flashcards
-        idx = st.session_state.flash_index
-        total = len(cards)
-
-        # Handle end of flashcards
-        if idx >= total:
-            next_flashcard()
-            return
-
-        card = cards[idx]
-
-        # Time tracking
-        if st.session_state.challenge_mode:
-            elapsed = time.time() - st.session_state.start_time
-            remaining = max(0, 15 - int(elapsed))
-            st.markdown(f"<p style='color:#d9534f'><strong>⏳ Time Left:</strong> {remaining}s</p>", unsafe_allow_html=True)
-            if remaining == 0:
-                st.warning("⏱️ Time's up!")
-                next_flashcard()
-                st.rerun()
-
-        # Progress and Score
-        st.progress((idx + 1) / total)
-        st.markdown(f"📘 Flashcard {idx + 1}/{total} &nbsp;&nbsp;|&nbsp;&nbsp; 🏅 Score: {st.session_state.score}", unsafe_allow_html=True)
-
-        # Flashcard UI container
-        with st.container():
-            html = f"""
-            <div style='
-                background-color: #f8f9fa;
-                color: #212529;
-                padding: 2rem;
-                border-radius: 15px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-                margin-top: 1rem;
-                margin-bottom: 1rem;
-            '>
-                <h3 style='margin-bottom: 1rem;'>❓ {card['question']}</h3>
-            """
-
-        if st.session_state.show_answer:
-            html += f"""
-            <div style='color:#155724;background-color:#d4edda;padding:1rem;border-radius:10px;'>
-                <strong>💡 Answer:</strong> {card['answer']}
-            </div>
-            """
-        else:
-            if st.button("🔍 Show Answer"):
-                st.session_state.show_answer = True
-                st.rerun()
-
-        html += "</div>"
-        st.markdown(html, unsafe_allow_html=True)
-
-        # Buttons
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("✅ I knew this"):
-                st.session_state.score += 1
-                next_flashcard()
-                st.rerun()
-        with col2:
-            if st.button("❌ I didn’t know"):
-                st.session_state.wrong_flashcards.append(card)
-                next_flashcard()
-                st.rerun()
-
-    else:
-        st.info("Click the button above to generate flashcards.")
-
-
-def next_flashcard():
-    st.session_state.flash_index += 1
-    st.session_state.start_time = time.time()
-    st.session_state.show_answer = False
-
-    # If done, repeat wrong ones or finish
-    if st.session_state.flash_index >= len(st.session_state.flashcards):
-        if st.session_state.wrong_flashcards:
-            st.success("🔁 Repeating the flashcards you missed!")
-            st.session_state.flashcards = st.session_state.wrong_flashcards
-            st.session_state.wrong_flashcards = []
-            st.session_state.flash_index = 0
-            st.session_state.start_time = time.time()
-            st.session_state.show_answer = False
-        else:
-            st.balloons()
-            st.success("🎉 All flashcards reviewed!")
-            st.toast(f"🏁 Final Score: {st.session_state.score}", icon="✅")
-            if st.button("🔄 Restart Game"):
-                st.session_state.flashcards = []
-                st.session_state.flash_index = 0
-                st.session_state.wrong_flashcards = []
-                st.session_state.score = 0
-                st.session_state.show_answer = False
-                st.rerun()
-
-
-def generate_flashcards_from_text(text, num_cards=5):
-    from components.utils import gemini_llm
-
+def generate_flashcards_from_text(text: str, num_cards: int = 5) -> List[Dict[str, str]]:
+    """Generate flashcards from the given text using Gemini LLM."""
     prompt = f"""
     Generate {num_cards} flashcards (Question and Answer format) from the content below.
     Format:
@@ -158,10 +27,9 @@ def generate_flashcards_from_text(text, num_cards=5):
     """
 
     result = gemini_llm(prompt)
-    st.write("🔍 Raw Flashcard Output:", result)  # Debug
-
     cards = []
     lines = result.splitlines()
+    
     for i in range(0, len(lines), 2):
         if i + 1 < len(lines):
             try:
@@ -170,4 +38,95 @@ def generate_flashcards_from_text(text, num_cards=5):
                 cards.append({"question": q, "answer": a})
             except IndexError:
                 continue
+    
     return cards
+
+def get_current_flashcard() -> Optional[Dict[str, str]]:
+    """Get the current flashcard based on the session state."""
+    cards = get_session_value('flashcards', [])
+    idx = get_session_value('flash_index', 0)
+    
+    if not cards or idx >= len(cards):
+        return None
+    
+    return cards[idx]
+
+def get_flashcard_progress() -> Dict[str, Any]:
+    """Get the current progress of the flashcard game."""
+    cards = get_session_value('flashcards', [])
+    idx = get_session_value('flash_index', 0)
+    total = len(cards)
+    score = get_session_value('score', 0)
+    
+    if not cards:
+        return {
+            'has_cards': False,
+            'current_card': None,
+            'progress': 0,
+            'score': 0,
+            'total': 0,
+            'current': 0
+        }
+    
+    return {
+        'has_cards': True,
+        'current_card': get_current_flashcard(),
+        'progress': ((idx + 1) / total * 100) if total > 0 else 0,
+        'score': score,
+        'total': total,
+        'current': idx + 1
+    }
+
+def handle_next_flashcard(action: str) -> None:
+    """Handle the transition to the next flashcard."""
+    if action == 'knew':
+        set_session_value('score', get_session_value('score', 0) + 1)
+    elif action == 'didnt_know':
+        current_card = get_current_flashcard()
+        if current_card:
+            wrong_cards = get_session_value('wrong_flashcards', [])
+            wrong_cards.append(current_card)
+            set_session_value('wrong_flashcards', wrong_cards)
+    
+    # Update index and reset answer state
+    new_index = get_session_value('flash_index', 0) + 1
+    set_session_value('flash_index', new_index)
+    set_session_value('show_answer', False)
+    set_session_value('start_time', time.time())
+    
+    # Check if we're done with all cards
+    cards = get_session_value('flashcards', [])
+    if new_index >= len(cards):
+        wrong_cards = get_session_value('wrong_flashcards', [])
+        if wrong_cards:
+            # Start reviewing wrong cards
+            set_session_value('flashcards', wrong_cards)
+            set_session_value('wrong_flashcards', [])
+            set_session_value('flash_index', 0)
+            flash_message('Repeating the cards you missed!', 'info')
+        else:
+            # Game complete
+            flash_message(f'Game complete! Final score: {get_session_value("score", 0)}', 'success')
+            set_session_value('flashcards', [])
+            set_session_value('flash_index', 0)
+
+def get_remaining_time() -> int:
+    """Get remaining time for challenge mode."""
+    if not get_session_value('challenge_mode', False):
+        return -1
+    
+    start_time = get_session_value('start_time', time.time())
+    elapsed = time.time() - start_time
+    remaining = max(0, 15 - int(elapsed))
+    return remaining
+
+def toggle_challenge_mode() -> None:
+    """Toggle the challenge mode state."""
+    current_mode = get_session_value('challenge_mode', False)
+    set_session_value('challenge_mode', not current_mode)
+    set_session_value('start_time', time.time())
+
+def toggle_answer() -> None:
+    """Toggle the answer visibility state."""
+    current_state = get_session_value('show_answer', False)
+    set_session_value('show_answer', not current_state)

@@ -81,11 +81,15 @@
     {% endif %}
 </div>
 
+{% endblock %}
+
+{% block extra_css %}
 <style>
 .flashcards-container {
     max-width: 800px;
     margin: 0 auto;
     padding: 2rem;
+    color: #000000;
 }
 
 .settings-panel {
@@ -102,6 +106,7 @@
     justify-content: space-around;
     align-items: center;
     font-size: 1.1rem;
+    color: #000000;
 }
 
 .flashcard {
@@ -110,15 +115,21 @@
     padding: 2rem;
     margin: 2rem 0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    color: #000000;
 }
 
 .question {
     margin-bottom: 1.5rem;
+    color: #000000;
+}
+
+.question h3 {
+    color: #000000;
 }
 
 .answer {
     background-color: #d4edda;
-    color: #155724;
+    color: #000000;
     padding: 1rem;
     border-radius: 10px;
     margin-top: 1rem;
@@ -133,9 +144,9 @@
     font-size: 1.1rem;
 }
 
-/* Challenge Mode Timer Styles */
 #timer {
     font-weight: bold;
+    color: #d9534f;
 }
 
 /* Animations */
@@ -156,7 +167,9 @@
     animation: fadeIn 0.5s ease;
 }
 </style>
+{% endblock %}
 
+{% block extra_js %}
 {% if session.challenge_mode %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
