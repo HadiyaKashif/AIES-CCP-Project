@@ -18,7 +18,7 @@
             </form>
             
             <!-- Website Scraper -->
-            <form action="{{ url_for('scrape_site_route') }}" method="post" class="mb-3">
+            <form action="{{ url_for('scrape_site_route') }}" method="post" class="mb-3" autocomplete="off">
                 <div class="mb-3">
                     <label for="websiteUrl" class="form-label">Or enter website URL</label>
                     <input type="url" class="form-control form-control-sm" id="websiteUrl" name="url">
@@ -87,9 +87,9 @@
         </div>
         
         <!-- Chat Input -->
-        <form id="chatForm" class="mb-4">
+        <form id="chatForm" class="mb-4" autocomplete="off">
             <div class="input-group">
-                <input type="text" id="promptInput" class="form-control" placeholder="Ask about your documents..." required>
+                <input type="text" id="promptInput" class="form-control" placeholder="Ask about your documents..." required autocomplete="off">
                 <button class="btn btn-primary" type="submit">
                     <i class="fas fa-paper-plane"></i> Send
                 </button>
