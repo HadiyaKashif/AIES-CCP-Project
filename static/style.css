@@ -1,0 +1,137 @@
+/* Custom styles for RAG Application */
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Main container styling */
+.container-fluid {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Chat message styling */
+.user-message {
+    background-color: #e1f5fe;
+    border-left: 4px solid #039be5;
+}
+
+.assistant-message {
+    background-color: #f1f3f4;
+    border-left: 4px solid #9e9e9e;
+}
+
+.user-message, .assistant-message {
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+.user-message:hover, .assistant-message:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Sidebar styling */
+.sidebar {
+    border-right: 1px solid #e0e0e0;
+    height: 100%;
+}
+
+/* Button styling */
+.btn-primary {
+    background-color: #1a73e8;
+    border-color: #1a73e8;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #1765cc;
+    border-color: #1765cc;
+    transform: translateY(-1px);
+}
+
+/* Notes button animation */
+.float-notes-btn {
+    transition: all 0.3s ease;
+}
+
+.float-notes-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Chat container scrollbar */
+.chat-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.chat-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+
+.chat-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Code block styling for chat responses */
+pre {
+    background-color: #2d2d2d;
+    color: #f8f8f2;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+
+code {
+    font-family: 'Courier New', Courier, monospace;
+    padding: 2px 4px;
+    background-color: #f0f0f0;
+    border-radius: 3px;
+}
+
+pre code {
+    background-color: transparent;
+    padding: 0;
+}
+
+/* Markdown table styling */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 15px 0;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Flash message animations */
+.alert {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+} 

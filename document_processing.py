@@ -9,7 +9,7 @@ from docx import Document
 from PIL import Image
 import requests
 from bs4 import BeautifulSoup
-import streamlit as st
+from flask import flash, session
 from vector_store import get_vector_store
 
 def scrape_website(url):
@@ -28,36 +28,34 @@ def process_text_data(text_data, source):
         try:
             vector_store = get_vector_store()
             vector_store.add_documents(splits)
-            st.success(f"Processed {len(splits)} chunks from {source}")
-            st.session_state.processed = True
+            flash(f"Processed {len(splits)} chunks from {source}", "success")
+            session['processed'] = True
+            return True
         except Exception as e:
-            st.error(f"Vector store error: {str(e)}")
+            flash(f"Vector store error: {str(e)}", "error")
+            return False
 
 def process_documents(uploaded_files):
-    for file in uploaded_files:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=f".{file.name.split('.')[-1]}") as tmp:
-            tmp.write(file.getvalue())
-            tmp_path = tmp.name
+    for file_path in uploaded_files:
         try:
-            ext = file.name.split('.')[-1].lower()
+            ext = os.path.splitext(file_path)[1].lower()[1:]  # Get extension without dot
             text = ""
             if ext == "pdf":
-                loader = PyPDFLoader(tmp_path)
+                loader = PyPDFLoader(file_path)
                 pages = loader.load_and_split()
                 text = "\n".join([p.page_content for p in pages])
             elif ext == "pptx":
-                prs = Presentation(tmp_path)
+                prs = Presentation(file_path)
                 text = "\n".join([shape.text for slide in prs.slides for shape in slide.shapes if hasattr(shape, "text")])
             elif ext == "docx":
-                doc = Document(tmp_path)
+                doc = Document(file_path)
                 text = "\n".join([p.text.strip() for p in doc.paragraphs if p.text.strip()])
             elif ext in ["png", "jpg", "jpeg"]:
-                text = pytesseract.image_to_string(Image.open(tmp_path))
+                text = pytesseract.image_to_string(Image.open(file_path))
             else:
-                st.error(f"Unsupported file type: {file.name}")
+                flash(f"Unsupported file type: {os.path.basename(file_path)}", "error")
                 continue
-            process_text_data(text, file.name)
+            process_text_data(text, os.path.basename(file_path))
         except Exception as e:
-            st.error(f"Processing error for {file.name}: {str(e)}")
-        finally:
-            os.unlink(tmp_path)
+            flash(f"Processing error for {os.path.basename(file_path)}: {str(e)}", "error")
+            continue
