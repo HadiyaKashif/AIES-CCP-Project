@@ -351,45 +351,72 @@ tr:nth-child(even) {
 }
 
 /* Notes Drawer Styles */
-.notes-drawer {
-    background: linear-gradient(to left,
-        var(--deep-space) 0%,
-        rgba(88, 65, 119, 0.95) 100%);
-    border-left: 1px solid var(--star-blue);
-    box-shadow: -8px 0 32px var(--cosmic-shadow);
-    position: fixed;
-    right: -400px;
-    top: 0;
-    width: 400px;
-    height: 100vh;
-    transition: right var(--transition-speed) ease;
-    z-index: 1000;
-    padding: 2rem;
+
+/* Notes Toggle Button - Make sure it's visible above other elements */
+#toggleNotesBtn {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10000; /* Increased z-index */
+  background: var(--purple-gradient);
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all var(--transition-speed) ease;
+  color: var(--cosmic-dust);
+  display: flex !important; /* Force display */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
-.notes-drawer.open {
-    right: 0;
+/* Notes Drawer - Ensure proper layering and visibility */
+#notesDrawer {
+  position: fixed;
+  right: -400px;
+  top: 0;
+  width: 400px;
+  height: 100vh;
+  background: linear-gradient(to left, var(--deep-space) 0%, rgba(88, 65, 119, 0.95) 100%);
+  border-left: 1px solid var(--star-blue);
+  box-shadow: -8px 0 32px var(--cosmic-shadow);
+  transition: right var(--transition-speed) ease;
+  z-index: 9999; /* Higher than chat input */
+  padding: 2rem;
+  display: flex !important;
+  flex-direction: column;
 }
 
-.notes-toggle-btn {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    z-index: 1001;
-    background: var(--purple-gradient);
-    border: none;
-    border-radius: 50%;
-    width: 48px;
-    height: 48px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    transition: all var(--transition-speed) ease;
-    color: var(--cosmic-dust);
+#notesDrawer.open {
+  right: 0 !important;
 }
 
-.notes-toggle-btn:hover {
-    background: linear-gradient(135deg, var(--cosmic-blue), var(--light-purple));
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+/* Editor Container - Ensure proper height for buttons */
+#quillEditor {
+  flex: 1;
+  min-height: 60vh;
+  margin-bottom: 1rem;
+  overflow-y: auto;
+}
+
+/* Download Button Specific Styling */
+#exportNotesPdfBtn {
+  background: linear-gradient(135deg, var(--cosmic-blue), var(--light-purple));
+  border: none !important;
+  color: var(--cosmic-dust) !important;
+  flex-shrink: 0;
+}
+
+#exportNotesPdfBtn:hover {
+  background: linear-gradient(135deg, var(--light-purple), var(--cosmic-blue));
+}
+
+#toggleNotesBtn:hover {
+  background: linear-gradient(135deg, var(--cosmic-blue), var(--light-purple));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .notes-toggle-btn i {
