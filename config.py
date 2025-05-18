@@ -8,12 +8,12 @@ from langchain_core.tools import Tool
 # Load environment variables from .env file
 load_dotenv()
 
-# Environment variables
-PINECONE_API_KEY = os.getenv("PINECONE_API_KEY", "")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+# Load environment variables if present, otherwise use provided values
+PINECONE_API_KEY = os.environ.get('PINECONE_API_KEY', 'pcsk_5yDKu_UB67E9sGFh3FzXJEu7irYDLonXpPRiHBCyvqBwzwsEqhaYsni3arKjMTG7PSMRe')
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', 'AIzaSyALsCaAxP3X_JM1ZAgOxMNWCzbgwl1_X3o')
+GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', 'AIzaSyAmMMpS79X3z5nbj6wh0dsIXfe_031V98k')
+GOOGLE_CSE_ID = os.environ.get('GOOGLE_CSE_ID', '576dfbf65794e430d')
 PINECONE_INDEX_NAME = "rag-advanced"
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")
-GOOGLE_CSE_ID = os.getenv("GOOGLE_CSE_ID", "")
 
 # Print environment variable status (for debugging)
 print(f"PINECONE_API_KEY loaded: {'Yes' if PINECONE_API_KEY else 'No'}")
