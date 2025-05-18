@@ -232,6 +232,51 @@
         // For assistant messages, render markdown
         if (role === 'assistant') {
             messageElement.html(renderMarkdown(content));
+            
+            // Add Play Audio button for assistant messages
+            const playButton = $('<button class="btn btn-sm btn-outline-secondary mt-2 play-audio-btn"><i class="fas fa-volume-up me-1"></i>Play Audio</button>');
+            
+            // Add click event to play audio
+            playButton.on('click', function() {
+                const textToSpeak = content.replace(/```[\s\S]*?```/g, ''); // Remove code blocks
+                
+                // Check if SpeechSynthesis is supported
+                if ('speechSynthesis' in window) {
+                    // If button shows "Stop Audio", stop playback and reset
+                    if ($(this).find('i').hasClass('fa-stop')) {
+                        window.speechSynthesis.cancel();
+                        $(this).html('<i class="fas fa-volume-up me-1"></i>Play Audio');
+                        return false;
+                    }
+                    
+                    // Create a new speech synthesis utterance
+                    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                    
+                    // Optional: Set properties for the speech
+                    utterance.rate = 1.0; // Speed
+                    utterance.pitch = 1.0; // Pitch
+                    
+                    // Stop any currently playing audio
+                    window.speechSynthesis.cancel();
+                    
+                    // Play the audio
+                    window.speechSynthesis.speak(utterance);
+                    
+                    // Change button text while playing
+                    $(this).html('<i class="fas fa-stop me-1"></i>Stop Audio');
+                    
+                    // Change button back when done speaking
+                    utterance.onend = function() {
+                        playButton.html('<i class="fas fa-volume-up me-1"></i>Play Audio');
+                    };
+                } else {
+                    alert('Sorry, your browser does not support text-to-speech!');
+                }
+                
+                return false;
+            });
+            
+            messageElement.append(playButton);
         } else {
             messageElement.text(content);
         }

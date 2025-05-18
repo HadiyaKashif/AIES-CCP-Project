@@ -730,4 +730,20 @@ input[type="file"]::-webkit-file-upload-button:hover {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 1rem;
+}
+
+/* Play Audio Button Styles */
+.play-audio-btn {
+    margin-left: 0.5rem;
+    font-size: 0.85rem;
+    background-color: var(--surface-color);
+    border-color: var(--border-color);
+    color: var(--text-color);
+    transition: all 0.2s ease;
+}
+
+.play-audio-btn:hover {
+    background-color: var(--star-blue);
+    border-color: var(--star-blue);
+    color: var(--deep-space);
 } 
