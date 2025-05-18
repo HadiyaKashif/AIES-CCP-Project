@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from pinecone import Pinecone
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
-from langchain_google_community import GoogleSearchAPIWrapper
+from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
 from langchain_core.tools import Tool
 
 # Load environment variables from .env file
@@ -11,7 +11,7 @@ load_dotenv()
 # Environment variables
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY", "")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-PINECONE_INDEX_NAME = "rag-advanced"
+PINECONE_INDEX_NAME = "smartsage-rag-index"
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")
 GOOGLE_CSE_ID = os.getenv("GOOGLE_CSE_ID", "")
 
@@ -28,7 +28,7 @@ gemini_embeddings = GoogleGenerativeAIEmbeddings(
     google_api_key=GEMINI_API_KEY
 )
 gemini_llm = ChatGoogleGenerativeAI(
-    model="gemini-2.0-flash",
+    model="gemini-pro",
     google_api_key=GEMINI_API_KEY,
     temperature=0.3
 )

@@ -95,14 +95,37 @@
 
 <!-- Fixed Chat Input Container -->
 <div class="chat-input-container">
-    <form id="chatForm">
+    <form id="chatForm" method="post" action="{{ url_for('chat') }}">
         <div class="input-group">
+            <button type="button" id="recordAudioBtn" class="btn btn-outline-secondary" title="Record Audio">
+                <i class="fas fa-microphone"></i>
+            </button>
             <input type="text" id="promptInput" class="form-control" placeholder="Ask about your documents..." required>
             <button class="btn btn-primary" type="submit">
                 <i class="fas fa-paper-plane me-2"></i>Send
             </button>
         </div>
     </form>
+</div>
+
+<!-- Audio Recording Modal -->
+<div class="modal fade" id="recordingModal" tabindex="-1" aria-labelledby="recordingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="recordingModalLabel">Voice Recording</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div id="recordingStatus">Click Start to begin recording</div>
+                <div class="mt-3">
+                    <button id="startRecordingBtn" class="btn btn-primary">
+                        <i class="fas fa-microphone"></i> Start Recording
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Notes Toggle Button -->
@@ -215,9 +238,51 @@
         const messageClass = role === 'user' ? 'user-message' : 'assistant-message';
         const messageElement = $('<div class="' + messageClass + '"></div>');
         
-        // For assistant messages, render markdown
+        // For assistant messages, render markdown and add speak button
         if (role === 'assistant') {
             messageElement.html(renderMarkdown(content));
+            
+            // Add speak button
+            const speakBtn = $('<button class="btn btn-sm btn-outline-secondary speak-btn ms-2">' +
+                '<i class="fas fa-volume-up"></i></button>');
+            
+            speakBtn.click(function() {
+                const button = $(this);
+                if (button.hasClass('speaking')) {
+                    // Stop speaking
+                    $.post('/stop-audio')
+                        .fail(function(error) {
+                            console.error('Error stopping audio:', error);
+                        });
+                    button.removeClass('speaking');
+                } else {
+                    // Start speaking
+                    button.addClass('speaking');
+                    $.ajax({
+                        url: '/speak-text',
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ 
+                            text: $(messageElement).clone().children('.speak-btn').remove().end().text().trim()
+                        }),
+                        success: function(response) {
+                            if (!response.success) {
+                                console.error('Error playing audio:', response.message);
+                                alert('Error playing audio: ' + response.message);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                            alert('Error playing audio: ' + error);
+                        },
+                        complete: function() {
+                            button.removeClass('speaking');
+                        }
+                    });
+                }
+            });
+            
+            messageElement.append(speakBtn);
         } else {
             messageElement.text(content);
         }
@@ -286,6 +351,52 @@
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // Audio Recording Functionality
+    $('#recordAudioBtn').click(function() {
+        $('#recordingModal').modal('show');
+    });
+
+    $('#startRecordingBtn').click(function() {
+        const button = $(this);
+        const statusDiv = $('#recordingStatus');
+        
+        if (button.hasClass('recording')) {
+            // Stop recording
+            button.removeClass('recording').html('<i class="fas fa-microphone"></i> Start Recording');
+            statusDiv.text('Processing recording...');
+            
+            // Stop the recording and get the text
+            $.post('/stop-audio')
+                .then(() => {
+                    $('#recordingModal').modal('hide');
+                    statusDiv.text('Click Start to begin recording');
+                })
+                .catch(error => {
+                    statusDiv.text('Error stopping recording: ' + error.message);
+                });
+        } else {
+            // Start recording
+            button.addClass('recording').html('<i class="fas fa-stop"></i> Stop Recording');
+            statusDiv.text('Recording... Speak now');
+            
+            $.post('/record-audio')
+                .then(response => {
+                    if (response.success) {
+                        $('#promptInput').val(response.text);
+                        $('#recordingModal').modal('hide');
+                    } else {
+                        statusDiv.text('Error: ' + response.error);
+                    }
+                })
+                .catch(error => {
+                    statusDiv.text('Error recording: ' + error.message);
+                })
+                .finally(() => {
+                    button.removeClass('recording').html('<i class="fas fa-microphone"></i> Start Recording');
+                });
+        }
     });
 </script>
 {% endblock %} 

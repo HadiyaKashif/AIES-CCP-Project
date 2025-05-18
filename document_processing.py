@@ -41,9 +41,19 @@ def process_documents(uploaded_files):
             ext = os.path.splitext(file_path)[1].lower()[1:]  # Get extension without dot
             text = ""
             if ext == "pdf":
-                loader = PyPDFLoader(file_path)
-                pages = loader.load_and_split()
-                text = "\n".join([p.page_content for p in pages])
+                try:
+                    loader = PyPDFLoader(file_path)
+                    pages = loader.load_and_split()
+                    if not pages:
+                        flash(f"Warning: No text content found in PDF file: {os.path.basename(file_path)}", "warning")
+                        continue
+                    text = "\n".join([p.page_content for p in pages])
+                except ImportError as ie:
+                    flash(f"PDF processing error: Missing required package. Please ensure 'pypdf' is installed. Error: {str(ie)}", "error")
+                    continue
+                except Exception as pe:
+                    flash(f"PDF processing error for {os.path.basename(file_path)}: {str(pe)}", "error")
+                    continue
             elif ext == "pptx":
                 prs = Presentation(file_path)
                 text = "\n".join([shape.text for slide in prs.slides for shape in slide.shapes if hasattr(shape, "text")])
@@ -55,6 +65,11 @@ def process_documents(uploaded_files):
             else:
                 flash(f"Unsupported file type: {os.path.basename(file_path)}", "error")
                 continue
+            
+            if not text.strip():
+                flash(f"Warning: No text content extracted from {os.path.basename(file_path)}", "warning")
+                continue
+                
             process_text_data(text, os.path.basename(file_path))
         except Exception as e:
             flash(f"Processing error for {os.path.basename(file_path)}: {str(e)}", "error")

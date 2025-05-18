@@ -1,44 +1,38 @@
 from config import pc, gemini_embeddings
-from langchain_pinecone import PineconeVectorStore
+from langchain_community.vectorstores.pinecone import Pinecone as LangchainPinecone
 from flask import flash, session
 from pinecone import Pinecone, ServerlessSpec
 import time
 
-PINECONE_INDEX_NAME = "rag-advanced"
+PINECONE_INDEX_NAME = "smartsage-rag-index"
 
 def initialize_pinecone():
     try:
         existing_indexes = pc.list_indexes().names()
         
-        if PINECONE_INDEX_NAME not in existing_indexes:
-            print("Creating new Pinecone index... (may take 1-2 minutes)")
-            pc.create_index(
-                name=PINECONE_INDEX_NAME,
-                dimension=768,
-                metric="cosine",
-                spec=ServerlessSpec(cloud="aws", region="us-east-1")
-            )
-            print("Waiting for index to be ready...")
-            while True:
-                try:
-                    desc = pc.describe_index(PINECONE_INDEX_NAME)
-                    if desc.status['ready']:
-                        break
-                    time.sleep(5)
-                except Exception as e:
-                    time.sleep(5)
-            print("Index created and ready to use!")
-        else:
-            print("Checking index status...")
-            while True:
-                try:
-                    desc = pc.describe_index(PINECONE_INDEX_NAME)
-                    if desc.status['ready']:
-                        break
-                    time.sleep(5)
-                except Exception as e:
-                    time.sleep(5)
-            print(f"Using existing index: {PINECONE_INDEX_NAME}")
+        # Delete old index if it exists
+        if PINECONE_INDEX_NAME in existing_indexes:
+            print(f"Deleting existing index: {PINECONE_INDEX_NAME}")
+            pc.delete_index(PINECONE_INDEX_NAME)
+            time.sleep(5)  # Wait for deletion to complete
+            
+        print("Creating new Pinecone index... (may take 1-2 minutes)")
+        pc.create_index(
+            name=PINECONE_INDEX_NAME,
+            dimension=768,
+            metric="cosine",
+            spec=ServerlessSpec(cloud="aws", region="us-east-1")
+        )
+        print("Waiting for index to be ready...")
+        while True:
+            try:
+                desc = pc.describe_index(PINECONE_INDEX_NAME)
+                if desc.status['ready']:
+                    break
+                time.sleep(5)
+            except Exception as e:
+                time.sleep(5)
+        print("Index created and ready to use!")
     except Exception as e:
         print(f"Pinecone initialization failed: {str(e)}")
         raise
@@ -62,8 +56,8 @@ def clear_index():
 def get_vector_store():
     # We can't store the actual vector_store object in the session
     # So we'll create a new one each time
-    return PineconeVectorStore(
+    return LangchainPinecone(
         index_name=PINECONE_INDEX_NAME,
-        embedding=gemini_embeddings,
+        embedding_function=gemini_embeddings,
         namespace="default"
     )

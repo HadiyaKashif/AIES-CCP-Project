@@ -12,11 +12,12 @@ from document_processing import process_documents, scrape_website, process_text_
 from vector_store import initialize_pinecone, clear_index, get_vector_store
 from rag_techniques import reciprocal_rank_fusion, generate_query_variations, generate_reasoning_steps, generate_sub_questions
 from web_scrapping import search_google
+from audio import AudioManager
 
 # Initialize Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default-secret-key')
-app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max upload size
 app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'
 app.config['SESSION_COOKIE_SECURE'] = True
@@ -33,6 +34,9 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 
 # Initialize Pinecone index
 initialize_pinecone()
+
+# Initialize AudioManager
+audio_manager = AudioManager()
 
 @app.before_request
 def initialize_session():
@@ -361,6 +365,37 @@ def debug():
     }
     
     return jsonify(api_status)
+
+@app.route('/record-audio', methods=['POST'])
+def record_audio():
+    try:
+        success, result = audio_manager.record_audio()
+        if success:
+            return jsonify({'success': True, 'text': result})
+        else:
+            return jsonify({'success': False, 'message': result})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/speak-text', methods=['POST'])
+def speak_text():
+    try:
+        text = request.json.get('text')
+        if not text:
+            return jsonify({'success': False, 'message': 'No text provided'})
+        
+        success, result = audio_manager.speak_text(text)
+        return jsonify({'success': success, 'message': result})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/stop-audio', methods=['POST'])
+def stop_audio():
+    try:
+        success, result = audio_manager.stop_audio()
+        return jsonify({'success': success, 'message': result})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
 
 if __name__ == '__main__':
     app.run(debug=True) 
