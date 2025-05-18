@@ -1,18 +1,55 @@
-# Advanced Gemini RAG System - Flask Version
+# SmartSage – AI-Powered RAG Assistant with Productivity & Learning Features (Flask)
 
-This is a Flask web application for a Retrieval-Augmented Generation (RAG) system using Google's Gemini model. The application allows users to upload documents, scrape websites, and ask questions about the processed content. It also features web search fallback, notes system, and chat export functionality.
+SmartSage is a Flask-based Retrieval-Augmented Generation (RAG) system enhanced with Google's Gemini APIs and Pinecone. It's not just a chatbot — it's a complete intelligent assistant designed to boost learning, productivity, and cognitive engagement.
 
-## Features
+🔗 **[Watch Demo Video]https://youtu.be/g0nHoZTmlqg?si=hDim9MOgf4QGmKWe**
 
-- Document processing (PDF, DOCX, PPTX, images)
-- Website scraping and processing
+---
+
+## Key Features
+
+### **AI-Powered Retrieval & Generation**
+- Upload documents: **PDF, DOCX, PPTX, images**
+- Website scraping via URL input
 - Advanced RAG techniques:
-  - RAG-Fusion
-  - Multi-Query
-  - Question Decomposition
-- Web search fallback (requires Google API credentials)
-- Notes system with rich text editing and PDF export
-- Chat history export (JSON, TXT, PDF)
+  - **RAG Fusion**
+  - **Multi-Query Expansion**
+  - **Query Decomposition**
+- Web search fallback if no answer is found in documents, with **source link references**
+
+### **Smart Interaction**
+- **Text and voice-based chat**
+- Integrated **Gemini Pro and Gemini Flash** APIs for contextual and fluent answers
+- **Speech-to-text** and **text-to-speech** for accessibility
+
+### **Knowledge & Learning Tools**
+- **Flashcard Generator** from document or conversation content
+- **Memory Anchor System**:
+  - Input any concept
+  - Generates a unique **anchor**, **summary**, **mnemonic**, and **example** for retention
+
+### **Personal Workspace**
+- Rich **Notes Editor** for writing or pasting insights
+- Export notes to **TXT or PDF**
+
+### **Focus & Wellness Suite**
+- **Pomodoro Timer** (25-minute focus sessions + 5-minute breaks)
+- Tracks how many sessions were used per task
+- Personalized **motivational quotes** based on task type (e.g., reading, coding)
+- **Fatigue Detection System**:
+  - Uses webcam to detect **yawning or eye closure**
+  - Plays an alert and recommends breaks if fatigue is high
+
+### **Task Management**
+- Add, update, complete, and prioritize tasks
+- Tracks **task difficulty based on fatigue signals**
+- Generates task-based motivational insights
+
+### **Utilities**
+- **Chat export** in JSON, TXT, or PDF
+- **Dark/light mode**, responsive design with Bootstrap
+
+---
 
 ## Setup Instructions
 
@@ -56,3 +93,6 @@ This is a Flask web application for a Retrieval-Augmented Generation (RAG) syste
 - LangChain: Framework for RAG implementation
 - Various document processing libraries (PyPDF, python-docx, etc.)
 - Bootstrap & jQuery: Frontend
+- Tesseract / EasyOCR – OCR from images
+- OpenCV / Mediapipe – Fatigue detection from webcam
+- PyPDF2, python-docx, pdf2image – Document parsing
