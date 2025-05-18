@@ -567,5 +567,13 @@ document.getElementById("anchorForm").addEventListener("submit", async function 
             $('#generateAnchorBtn').click();
         }
     });
+
+    $('#exportNotesPdfBtn').click(function() {
+        const form = $('<form action="/export-notes-pdf" method="post"></form>');
+        $('body').append(form);
+        form.submit();
+        form.remove();
+    });
+    
 </script>
 {% endblock %} 
