@@ -106,19 +106,6 @@
     </form>
 </div>
 
-<form id="anchorForm" class="anchor-form">
-  <input type="text" id="conceptInput" class="anchor-input" placeholder="Enter a concept..." />
-  <button type="submit" class="anchor-button">Generate Anchor</button>
-</form>
-<div class="anchor-glow-wrapper">
-  <div id="anchorResult" class="anchor-result hidden">
-    <h3 id="anchorTerm" class="anchor-term"></h3>
-    <p><strong>Summary:</strong> <span id="anchorSummary"></span></p>
-    <p><strong>Mnemonic:</strong> <span id="anchorMnemonic"></span></p>
-    <p><strong>Example:</strong> <span id="anchorExample"></span></p>
-  </div>
-</div>
-
 <!-- Notes Toggle Button -->
 <button id="toggleNotesBtn" class="notes-toggle-btn">
     <i class="fas fa-note-sticky"></i>
@@ -458,38 +445,57 @@
             });
     }
     
-document.getElementById("anchorForm").addEventListener("submit", async function (e) {
+document.getElementById("generateAnchorBtn").addEventListener("click", async function (e) {
   e.preventDefault();
-  const context = document.getElementById("conceptInput").value;
-  const button = document.querySelector(".anchor-button");
+
+  const contextInput = document.getElementById("conceptInput");
   const result = document.getElementById("anchorResult");
+  const button = document.getElementById("generateAnchorBtn");
+  const context = contextInput.value.trim();
+
+  if (!context) {
+    alert("Please enter a concept first.");
+    return;
+  }
 
   button.disabled = true;
-  button.innerText = "Generating...";
+  button.innerHTML = `<i class="fas fa-spinner fa-spin me-2"></i>Generating...`;
 
-  const res = await fetch("http://127.0.0.1:5000/generate-anchor", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ context }),
-  });
+  try {
+    const response = await fetch("http://127.0.0.1:5000/generate-anchor", {
+      method: "POST",
+      headers: {
+         "Accept": "application/json",           
+         "Content-Type": "application/json" },
+      body: JSON.stringify({ context }),
+    });
 
-  const data = await res.json();
+    const data = await response.json();
+    console.log("🔁 Full response from backend:", data);
+
+    if (data.status === "success") {
+      const anchor = data.anchor;
+
+      // Safeguard against missing fields
+      document.getElementById("anchorTerm").innerText = anchor.term || "N/A";
+      document.getElementById("anchorSummary").innerText = anchor.summary || "N/A";
+      document.getElementById("anchorMnemonic").innerText = anchor.mnemonic || "N/A";
+      document.getElementById("anchorExample").innerText = anchor.example || "N/A";
+
+      result.classList.remove("hidden");
+      result.classList.add("visible");
+      result.style.display = "block";
+      result.scrollIntoView({ behavior: "smooth" });
+    } else {
+      alert("Error: " + (data.message || "Unknown error from backend."));
+    }
+
+  } catch (error) {
+    console.error("❌ Error caught:", error);
+  }
+
   button.disabled = false;
-  button.innerText = "Generate Anchor";
-
- if (data.status === "success") {
-  document.getElementById("anchorTerm").innerText = data.anchor.term;
-  document.getElementById("anchorSummary").innerText = data.anchor.summary;
-  document.getElementById("anchorMnemonic").innerText = data.anchor.mnemonic;
-  document.getElementById("anchorExample").innerText = data.anchor.example;
-
-  result.classList.remove("hidden");
-  result.classList.add("visible");
-  result.style.display = "block"; // ensure it becomes visible
-  result.scrollIntoView({ behavior: "smooth" });
-} else {
-  alert("Error: " + data.message);
-}
+  button.innerHTML = `<i class="fas fa-magic me-2"></i>Generate Anchor`;
 });
     // Initialize on page load
     $(document).ready(function() {
@@ -516,57 +522,69 @@ document.getElementById("anchorForm").addEventListener("submit", async function 
     });
     
     // Generate Anchor Button Click Handler
-    $('#generateAnchorBtn').click(function() {
-        const concept = $('#conceptInput').val().trim();
-        if (!concept) {
-            alert('Please enter a concept first.');
-            return;
-        }
-        
-        // Show loading state
-        $(this).prop('disabled', true);
-        $(this).html('<i class="fas fa-spinner fa-spin me-2"></i>Generating...');
-        
-        // Make API call to generate anchor
-        $.post('/generate-anchor', { concept: concept })
-            .done(function(response) {
+$('#generateAnchorBtn').click(function() {
+    const concept = $('#conceptInput').val().trim();
+    
+    // Check if concept is entered
+    if (!concept) {
+        alert('Please enter a concept first.');
+        return;
+    }
+    
+    // Show loading state
+    $(this).prop('disabled', true);
+    $(this).html('<i class="fas fa-spinner fa-spin me-2"></i>Generating...');
+    
+    // Make API call to generate anchor
+    $.ajax({
+        url: '/generate-anchor',  // API endpoint
+        method: 'POST',  // HTTP method
+        contentType: 'application/json',  // Set content type to JSON
+        data: JSON.stringify({ context: concept }),  // Convert the concept to JSON
+        success: function(response) {
+            if (response.status === 'success') {
                 // Update the result sections
-                $('#anchorTerm').text(response.term);
-                $('#anchorSummary').text(response.summary);
-                $('#anchorMnemonic').text(response.mnemonic);
-                $('#anchorExample').text(response.example);
+                $('#anchorTerm').text(response.anchor.term);
+                $('#anchorSummary').text(response.anchor.summary);
+                $('#anchorMnemonic').text(response.anchor.mnemonic);
+                $('#anchorExample').text(response.anchor.example);
                 
                 // Show the result with animation
                 $('#anchorResult').removeClass('hidden').addClass('visible');
-            })
-            .fail(function(error) {
-                alert('Failed to generate anchor. Please try again.');
-                console.error('Error:', error);
-            })
-            .always(function() {
-                // Reset button state
-                $('#generateAnchorBtn').prop('disabled', false);
-                $('#generateAnchorBtn').html('<i class="fas fa-magic me-2"></i>Generate Anchor');
-            });
-    });
-    
-    // Close drawers when clicking outside
-    $(document).click(function(event) {
-        if (!$(event.target).closest('#memoryAnchorDrawer, #toggleMemoryAnchorBtn, #notesDrawer, #toggleNotesBtn').length) {
-            $('#memoryAnchorDrawer').removeClass('open');
-            $('#toggleMemoryAnchorBtn').removeClass('open');
-            $('#notesDrawer').removeClass('open');
-            $('#toggleNotesBtn').removeClass('open');
+            } else {
+                alert('❌ Failed: ' + response.message);
+                console.error('Backend responded with error:', response);
+            }
+        },
+        error: function(xhr, status, error) {
+            alert('❌ Request failed. Check console.');
+            console.error('AJAX Error:', error, xhr.responseText);
+        },
+        complete: function() {
+            // Reset the button state after API call completes
+            $('#generateAnchorBtn').prop('disabled', false);
+            $('#generateAnchorBtn').html('<i class="fas fa-magic me-2"></i>Generate Anchor');
         }
     });
-    
-    // Handle Enter key in concept input
-    $('#conceptInput').keypress(function(event) {
-        if (event.which === 13) {
-            event.preventDefault();
-            $('#generateAnchorBtn').click();
-        }
-    });
+});
+
+// Close drawers when clicking outside
+$(document).click(function(event) {
+    if (!$(event.target).closest('#memoryAnchorDrawer, #toggleMemoryAnchorBtn, #notesDrawer, #toggleNotesBtn').length) {
+        $('#memoryAnchorDrawer').removeClass('open');
+        $('#toggleMemoryAnchorBtn').removeClass('open');
+        $('#notesDrawer').removeClass('open');
+        $('#toggleNotesBtn').removeClass('open');
+    }
+});
+
+// Handle Enter key in concept input
+$('#conceptInput').keypress(function(event) {
+    if (event.which === 13) {
+        event.preventDefault();
+        $('#generateAnchorBtn').click();  // Trigger the button click if Enter is pressed
+    }
+});
 
     $('#exportNotesPdfBtn').click(function() {
         const form = $('<form action="/export-notes-pdf" method="post"></form>');

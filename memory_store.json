@@ -61,5 +61,82 @@
     "mnemonic": "Think of a stack of plates: the last plate you put on is the first one you take off.",
     "example": "Imagine a stack of pancakes. You add pancakes to the top, and you eat pancakes from the top. The last pancake added is the first one eaten.",
     "id": 9
+  },
+  {
+    "term": "Queue",
+    "summary": "A queue is a linear data structure that follows the First-In, First-Out (FIFO) principle. Elements are added to the rear (enqueue) and removed from the front (dequeue).",
+    "mnemonic": "FIFO - First In, First Out - like waiting in line at a store.",
+    "example": "Imagine a line at a grocery store checkout. The first person in line is the first person served (dequeued). New customers join the back of the line (enqueued).",
+    "id": 10
+  },
+  {
+    "term": "Queue",
+    "summary": "A queue is a linear data structure that follows the First-In, First-Out (FIFO) principle. Elements are added to the rear (enqueue) and removed from the front (dequeue).",
+    "mnemonic": "FIFO - First In, First Out: Think of a line at a store; the first person in line is the first person served.",
+    "example": "Imagine a printer queue. Documents are added to the queue in the order they are submitted. The printer processes them in the same order, ensuring the first document submitted is printed first.",
+    "id": 11
+  },
+  {
+    "term": "Stack",
+    "summary": "A stack is a linear data structure that follows the Last-In, First-Out (LIFO) principle. Elements are added and removed from the top of the stack.",
+    "mnemonic": "Imagine a stack of plates. You can only add or remove plates from the top.",
+    "example": "Consider a browser's history. When you click the back button, you are accessing the last page you visited, which is the top element of the history stack.",
+    "id": 12
+  },
+  {
+    "term": "OOP",
+    "summary": "Object-Oriented Programming (OOP) is a programming paradigm based on the concept of 'objects', which contain data (attributes) and code (methods) to manipulate that data. It emphasizes modularity, reusability, and abstraction.",
+    "mnemonic": "O-O-P: Objects Organize Programs",
+    "example": "Imagine a 'Car' object. It has attributes like 'color', 'model', 'speed', and methods like 'accelerate()', 'brake()', 'turn()'. These attributes and methods are bundled together within the 'Car' object.",
+    "id": 13
+  },
+  {
+    "term": "Machine Learning",
+    "summary": "Machine Learning (ML) is a field of artificial intelligence (AI) that focuses on enabling computer systems to learn from data without being explicitly programmed. ML algorithms identify patterns, make predictions, and improve their performance over time with more data.",
+    "mnemonic": "MEL: Machines Evolve Learning",
+    "example": "A spam filter that learns to identify spam emails based on the characteristics of emails that users have previously marked as spam.",
+    "id": 14
+  },
+  {
+    "term": "Red Blood Cells",
+    "summary": "Red blood cells (erythrocytes) are the most common type of blood cell and the vertebrate organism's principal means of delivering oxygen (O\u2082) to the body tissues via the blood flow through the circulatory system. They take up oxygen in the lungs or gills and release it into tissues while squeezing through the body's capillaries.",
+    "mnemonic": "RBCs = Round, Red, Respiration (oxygen transport), Carry",
+    "example": "A low red blood cell count can indicate anemia, while a high count might suggest polycythemia. A blood test can determine the number of red blood cells in a sample.",
+    "id": 15
+  },
+  {
+    "term": "White Blood Cells",
+    "summary": "White blood cells (leukocytes) are cells of the immune system involved in defending the body against both infectious disease and foreign materials. Different types of white blood cells have different roles in the immune response.",
+    "mnemonic": "WBCs are the **W**arriors **B**attling **C**rimes (disease) in your body.",
+    "example": "A high white blood cell count can indicate an infection, inflammation, or even certain types of cancer. A low white blood cell count can make you more susceptible to infections.",
+    "id": 16
+  },
+  {
+    "term": "Red Blood Cells",
+    "summary": "Red blood cells (erythrocytes) are the most common type of blood cell and the vertebrate organism's principal means of delivering oxygen (O\u2082) to the body tissues\u2014via blood flow through the circulatory system. They take up oxygen in the lungs and release it into tissues while squeezing through the body's capillaries.",
+    "mnemonic": "RBCs = Really Bring Oxygen to Cells",
+    "example": "A doctor orders a complete blood count (CBC) to check a patient's red blood cell count, hemoglobin, and hematocrit to diagnose anemia.",
+    "id": 17
+  },
+  {
+    "term": "White Blood Cells (WBCs)",
+    "summary": "White blood cells, also known as leukocytes, are cells of the immune system involved in defending the body against both infectious disease and foreign materials. Different types of WBCs have different functions, including phagocytosis (engulfing pathogens), antibody production, and cell-mediated immunity.",
+    "mnemonic": "WBCs are the **W**arriors **B**attling **C**rimes (diseases) in your body.",
+    "example": "A high WBC count in a blood test might indicate an infection, inflammation, or other medical condition. Different types of WBCs, like neutrophils or lymphocytes, can be elevated depending on the specific cause.",
+    "id": 18
+  },
+  {
+    "term": "Platelets",
+    "summary": "Small, colorless blood cells that play a crucial role in blood clotting. They help stop bleeding by clumping together to form a plug in blood vessel injuries.",
+    "mnemonic": "Imagine a 'plate' that's broken (injury). Platelets are like tiny repairmen rushing to the broken plate to patch it up and stop the leak (bleeding).",
+    "example": "After a cut, platelets aggregate at the wound site, initiating the coagulation cascade and forming a clot to prevent further blood loss.",
+    "id": 19
+  },
+  {
+    "term": "Stack",
+    "summary": "A stack is a linear data structure that follows the Last-In, First-Out (LIFO) principle. Elements are added (pushed) and removed (popped) from the top of the stack.",
+    "mnemonic": "Think of a stack of plates: the last plate you put on is the first one you take off.",
+    "example": "Imagine a stack of books. You can only add or remove books from the top. The last book you placed on top is the first one you'll remove.",
+    "id": 20
   }
 ]

@@ -498,6 +498,7 @@ def load_anchors():
 def save_anchors(anchors):
     with open(ANCHORS_FILE, "w", encoding="utf-8") as f:
         json.dump(anchors, f, indent=2)
+        
 @app.route('/generate-anchor', methods=['POST'])
 def generate_anchor():
     data = request.json
