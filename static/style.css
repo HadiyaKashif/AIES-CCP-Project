@@ -3,7 +3,7 @@
  * A cosmic-inspired design system with ethereal gradients and stellar interactions
  */
 
-:root {
+ :root {
     --deep-space: #0B1026;
     --cosmic-blue: #2C4C8C;
     --nebula-purple: #584177;
@@ -47,6 +47,97 @@ body {
     background-attachment: fixed;
     color: var(--text-color);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Heading Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    color: var(--cosmic-dust);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, var(--star-blue), var(--cosmic-dust));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1.5rem;
+}
+
+h2 {
+    font-size: 2rem;
+    color: var(--star-blue);
+}
+
+h3 {
+    font-size: 1.75rem;
+    color: var(--cosmic-dust);
+}
+
+h4 {
+    font-size: 1.5rem;
+    color: var(--star-blue);
+}
+
+h5 {
+    font-size: 1.25rem;
+    color: var(--cosmic-dust);
+    font-weight: 500;
+}
+
+h6 {
+    font-size: 1rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Add hover effects for interactive headings (if they are links) */
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+    text-decoration: none;
+    position: relative;
+    transition: all var(--transition-speed) ease;
+}
+
+h1 a:hover, h2 a:hover, h3 a:hover, h4 a:hover, h5 a:hover, h6 a:hover {
+    opacity: 0.85;
+}
+
+/* Navigation bar styling */
+.navbar {
+    background-color: rgba(18, 121, 223, 0.35) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Navbar text and link styles */
+.navbar-brand,
+.navbar-nav .nav-link,
+.navbar .nav-item,
+.navbar-text {
+    color: #e7e7e8 !important;
+    font-weight: 500;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #e7e7e8 !important;
+}
+
+/* Study Monitor specific heading styles */
+.card-header h5 {
+    color: #3e3737 !important;
+    font-weight: 600;
+}
+
+/* Specific style for Study Buddy heading */
+.card-header h5 i.fa-user-graduate {
+    color: #2b2a2a;
 }
 
 /* Main container styling */
@@ -822,4 +913,4 @@ input[type="file"]::-webkit-file-upload-button:hover {
     0% { opacity: 1; }
     50% { opacity: 0.7; }
     100% { opacity: 1; }
-} 
+}
