@@ -3,3 +3,4 @@ __pycache__
 .env
 uploads/
 chats/
+flask_session
