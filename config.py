@@ -33,6 +33,7 @@ gemini_llm = ChatGoogleGenerativeAI(
     temperature=0.3
 )
 
+pinecone_index = pc.Index(PINECONE_INDEX_NAME)
 # Search tool setup
 if GOOGLE_API_KEY and GOOGLE_CSE_ID:
     try:

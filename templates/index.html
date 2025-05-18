@@ -101,6 +101,19 @@
             Notes <i class="fas fa-plus"></i>
         </button>
         
+        <form id="anchorForm" class="anchor-form">
+  <input type="text" id="conceptInput" class="anchor-input" placeholder="Enter a concept..." />
+  <button type="submit" class="anchor-button">Generate Anchor</button>
+</form>
+<div class="anchor-glow-wrapper">
+  <div id="anchorResult" class="anchor-result hidden">
+    <h3 id="anchorTerm" class="anchor-term"></h3>
+    <p><strong>Summary:</strong> <span id="anchorSummary"></span></p>
+    <p><strong>Mnemonic:</strong> <span id="anchorMnemonic"></span></p>
+    <p><strong>Example:</strong> <span id="anchorExample"></span></p>
+  </div>
+</div>
+
         <!-- Notes Container (Hidden by default) -->
         <div id="notesContainer" class="notes-container" style="display: none;">
             <h4 class="mb-3">📝 Notes Editor</h4>
@@ -254,6 +267,39 @@
             .catch(error => console.error('Error loading notes:', error));
     }
     
+document.getElementById("anchorForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const context = document.getElementById("conceptInput").value;
+  const button = document.querySelector(".anchor-button");
+  const result = document.getElementById("anchorResult");
+
+  button.disabled = true;
+  button.innerText = "Generating...";
+
+  const res = await fetch("http://127.0.0.1:5000/generate-anchor", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ context }),
+  });
+
+  const data = await res.json();
+  button.disabled = false;
+  button.innerText = "Generate Anchor";
+
+ if (data.status === "success") {
+  document.getElementById("anchorTerm").innerText = data.anchor.term;
+  document.getElementById("anchorSummary").innerText = data.anchor.summary;
+  document.getElementById("anchorMnemonic").innerText = data.anchor.mnemonic;
+  document.getElementById("anchorExample").innerText = data.anchor.example;
+
+  result.classList.remove("hidden");
+  result.classList.add("visible");
+  result.style.display = "block"; // ensure it becomes visible
+  result.scrollIntoView({ behavior: "smooth" });
+} else {
+  alert("Error: " + data.message);
+}
+});
     // Initialize on page load
     $(document).ready(function() {
         loadMessages();

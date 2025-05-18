@@ -1,17 +1,22 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash, send_file
 from werkzeug.utils import secure_filename
 import os
+import re
 import json
 import io
 from datetime import datetime
 from bs4 import BeautifulSoup
 
-from config import pc, gemini_embeddings, PINECONE_INDEX_NAME, gemini_llm, GOOGLE_API_KEY, GOOGLE_CSE_ID, web_search_tool, search
+from config import pc, gemini_embeddings, pinecone_index, PINECONE_INDEX_NAME, gemini_llm, GOOGLE_API_KEY, GOOGLE_CSE_ID, web_search_tool, search
 from chat_export import export_chat_history, generate_chat_pdf
 from document_processing import process_documents, scrape_website, process_text_data
 from vector_store import initialize_pinecone, clear_index, get_vector_store
 from rag_techniques import reciprocal_rank_fusion, generate_query_variations, generate_reasoning_steps, generate_sub_questions
 from web_scrapping import search_google
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain.schema import HumanMessage
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -40,6 +45,12 @@ def initialize_session():
 @app.route('/')
 def index():
     return render_template('index.html', GOOGLE_API_KEY=GOOGLE_API_KEY, GOOGLE_CSE_ID=GOOGLE_CSE_ID)
+
+#embeddings
+embedding = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+
+def get_embedding(text: str) -> list[float]:
+    return embedding.embed_query(text)
 
 @app.route('/process-files', methods=['POST'])
 def process_files_route():
@@ -225,6 +236,66 @@ def chat():
         'response': response,
         'messages': messages
     })
+
+ANCHORS_FILE = "memory_store.json"
+
+def load_anchors():
+    if not os.path.exists(ANCHORS_FILE):
+        return []
+    with open(ANCHORS_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def save_anchors(anchors):
+    with open(ANCHORS_FILE, "w", encoding="utf-8") as f:
+        json.dump(anchors, f, indent=2)
+@app.route('/generate-anchor', methods=['POST'])
+def generate_anchor():
+    data = request.json
+    user_context = data.get('context')
+
+    prompt_text = f"""
+                    Given the following concept, return a memory anchor in JSON format with these fields:
+                    - "term"
+                    - "summary"
+                    - "mnemonic"
+                    - "example"
+
+                    Concept:
+                    \"\"\"{user_context}\"\"\"
+
+                    Respond ONLY in JSON.
+                """
+
+    try:
+        response = gemini_llm.invoke([HumanMessage(content=prompt_text)])
+        print("🔍 Gemini raw output:", response)
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Gemini call failed: {str(e)}"}), 500
+
+    # Try to extract the actual content
+    try:
+        raw_output = response.content if hasattr(response, "content") else str(response)
+    # Clean markdown code block wrappers
+        cleaned_output = re.sub(r"^```json\s*|```$", "", raw_output, flags=re.MULTILINE).strip()
+        anchor = json.loads(cleaned_output)
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": f"Invalid JSON from Gemini: {str(e)}",
+            "raw_response": raw_output
+        }), 500
+
+    # Embed and upsert to Pinecone
+    embed = get_embedding(anchor['summary'])
+    pinecone_index.upsert([(f"anchor-{anchor['term']}", embed, anchor)])
+
+    # Save locally
+    anchors = load_anchors()
+    anchor["id"] = len(anchors) + 1
+    anchors.append(anchor)
+    save_anchors(anchors)
+
+    return jsonify({"status": "success", "anchor": anchor})
 
 @app.route('/save-notes', methods=['POST'])
 def save_notes():
