@@ -1,0 +1,65 @@
+[
+  {
+    "term": "Queue",
+    "summary": "A queue is a linear data structure that follows the First-In, First-Out (FIFO) principle. Elements are added to the rear (enqueue) and removed from the front (dequeue).",
+    "mnemonic": "FIFO - First In, First Out - Think of a line at a bank.",
+    "example": "Imagine a line of people waiting to buy tickets. The first person in line is the first person to buy a ticket and leave the line. New people join the end of the line.",
+    "id": 1
+  },
+  {
+    "term": "Queue",
+    "summary": "A queue is a linear data structure that follows the First-In, First-Out (FIFO) principle. Elements are added to the rear (enqueue) and removed from the front (dequeue).",
+    "mnemonic": "FIFO - First In, First Out - Think of a line at a grocery store.",
+    "example": "A print queue where print jobs are processed in the order they were submitted.",
+    "id": 2
+  },
+  {
+    "term": "Queue",
+    "summary": "A queue is a linear data structure that follows the First-In, First-Out (FIFO) principle. Elements are added to the rear (enqueue) and removed from the front (dequeue).",
+    "mnemonic": "FIFO - First In, First Out - Think of a line at a grocery store.",
+    "example": "Imagine a printer queue. Documents are printed in the order they are submitted, with the first document submitted being printed first.",
+    "id": 3
+  },
+  {
+    "term": "Queue",
+    "summary": "A queue is a linear data structure that follows the First-In, First-Out (FIFO) principle. Elements are added to the rear (enqueue) and removed from the front (dequeue).",
+    "mnemonic": "FIFO - First In, First Out - Think of a line at a grocery store.",
+    "example": "A print queue where print jobs are processed in the order they are submitted.",
+    "id": 4
+  },
+  {
+    "term": "Queue",
+    "summary": "A queue is a linear data structure that follows the First-In, First-Out (FIFO) principle. Elements are added to the rear (enqueue) and removed from the front (dequeue).",
+    "mnemonic": "FIFO - First In, First Out: Think of a line at a grocery store. The first person in line is the first person served.",
+    "example": "Imagine a printer queue. Documents are added to the queue as they are sent to the printer. The printer processes the documents in the order they were received, ensuring the first document sent is printed first.",
+    "id": 5
+  },
+  {
+    "term": "Queue",
+    "summary": "A queue is a linear data structure that follows the First-In, First-Out (FIFO) principle. Elements are added to the rear (enqueue) and removed from the front (dequeue).",
+    "mnemonic": "FIFO - First In, First Out - like waiting in line at a store.",
+    "example": "Imagine a line at a grocery store checkout. The first person in line is the first person served (dequeued). New customers join the back of the line (enqueued).",
+    "id": 6
+  },
+  {
+    "term": "Queue",
+    "summary": "A queue is a linear data structure that follows the First-In, First-Out (FIFO) principle. Elements are added to the rear (enqueue) and removed from the front (dequeue).",
+    "mnemonic": "FIFO - First In, First Out - Think of a line at a grocery store.",
+    "example": "Imagine a line of people waiting to buy tickets. The first person in line is the first person to buy a ticket and leave the line (dequeue). New people join the back of the line (enqueue).",
+    "id": 7
+  },
+  {
+    "term": "Queue",
+    "summary": "A queue is a linear data structure that follows the First-In, First-Out (FIFO) principle. Elements are added to the rear (enqueue) and removed from the front (dequeue).",
+    "mnemonic": "FIFO - First In, First Out - Think of a line at a bank.",
+    "example": "Imagine a line of people waiting to buy tickets at a movie theater. The first person in line is the first person to buy a ticket and leave the line.",
+    "id": 8
+  },
+  {
+    "term": "Stack",
+    "summary": "A stack is a linear data structure that follows the Last-In, First-Out (LIFO) principle. Elements are added and removed from only one end, called the 'top'.",
+    "mnemonic": "Think of a stack of plates: the last plate you put on is the first one you take off.",
+    "example": "Imagine a stack of pancakes. You add pancakes to the top, and you eat pancakes from the top. The last pancake added is the first one eaten.",
+    "id": 9
+  }
+]
