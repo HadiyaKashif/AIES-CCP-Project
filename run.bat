@@ -1,3 +1,0 @@
-@echo off
-echo Starting Advanced Gemini RAG System...
-python app.py 
