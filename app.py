@@ -123,7 +123,7 @@ break_time = None
 
 # Initialize pygame for alert sound
 pygame.mixer.init()
-alert_sound = pygame.mixer.Sound("study-buddy/alert.wav")
+alert_sound = pygame.mixer.Sound("static/alert.wav")
 
 # Add these helper functions after the global variables and before the routes
 
