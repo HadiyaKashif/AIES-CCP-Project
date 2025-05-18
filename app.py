@@ -465,9 +465,15 @@ def chat():
     messages.append({"role": "assistant", "content": response})
     session['messages'] = messages
     
+    # Check if no relevant data was found
+    no_relevant_data = False
+    if "I couldn't find this information in your documents" in response or "Couldn't find relevant information" in response:
+        no_relevant_data = True
+    
     return jsonify({
         'response': response,
-        'messages': messages
+        'messages': messages,
+        'no_relevant_data': no_relevant_data
     })
 
 @app.route('/save-notes', methods=['POST'])

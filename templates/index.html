@@ -98,6 +98,9 @@
     <form id="chatForm">
         <div class="input-group">
             <input type="text" id="promptInput" class="form-control" placeholder="Ask about your documents..." required>
+            <button class="btn btn-outline-secondary" type="button" id="voiceInputBtn" title="Voice Input">
+                <i class="fas fa-microphone"></i>
+            </button>
             <button class="btn btn-primary" type="submit">
                 <i class="fas fa-paper-plane me-2"></i>Send
             </button>
@@ -140,6 +143,82 @@
                 [{ 'color': [] }, { 'background': [] }],
                 [{ 'align': [] }]
             ]
+        }
+    });
+    
+    // Speech Recognition Setup
+    let recognition = null;
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+        
+        recognition.onstart = function() {
+            // Update UI to show we're listening
+            $('#voiceInputBtn').addClass('listening');
+            $('#voiceInputBtn i').removeClass('fa-microphone').addClass('fa-stop');
+            $('#voiceInputBtn').attr('title', 'Stop Listening');
+            
+            // Show listening indicator
+            const listeningIndicator = $('<div class="listening-indicator">Listening</div>');
+            $('.chat-input-container').prepend(listeningIndicator);
+        };
+        
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            $('#promptInput').val(transcript);
+            
+            // Remove listening indicator
+            $('.listening-indicator').remove();
+            
+            // Reset microphone button
+            $('#voiceInputBtn').removeClass('listening');
+            $('#voiceInputBtn i').removeClass('fa-stop').addClass('fa-microphone');
+            $('#voiceInputBtn').attr('title', 'Voice Input');
+            
+            // Submit the form if we got a valid transcript
+            if (transcript.trim() !== '') {
+                $('#chatForm').submit();
+            }
+        };
+        
+        recognition.onerror = function(event) {
+            console.error('Speech recognition error:', event.error);
+            
+            // Remove listening indicator
+            $('.listening-indicator').remove();
+            
+            // Reset microphone button
+            $('#voiceInputBtn').removeClass('listening');
+            $('#voiceInputBtn i').removeClass('fa-stop').addClass('fa-microphone');
+            $('#voiceInputBtn').attr('title', 'Voice Input');
+        };
+        
+        recognition.onend = function() {
+            // Remove listening indicator
+            $('.listening-indicator').remove();
+            
+            // Reset microphone button
+            $('#voiceInputBtn').removeClass('listening');
+            $('#voiceInputBtn i').removeClass('fa-stop').addClass('fa-microphone');
+            $('#voiceInputBtn').attr('title', 'Voice Input');
+        };
+    }
+    
+    // Voice Input Button Click Handler
+    $('#voiceInputBtn').click(function() {
+        if (!recognition) {
+            alert('Sorry, speech recognition is not supported in your browser.');
+            return;
+        }
+        
+        if ($(this).hasClass('listening')) {
+            // Stop listening
+            recognition.stop();
+        } else {
+            // Start listening
+            recognition.start();
         }
     });
     
@@ -215,8 +294,14 @@
             // Remove loading indicator
             $('.loading').remove();
             
-            // Add assistant message
-            addMessage('assistant', data.response);
+            // Check if response is empty or indicates no relevant data
+            if (!data.response || data.response.trim() === '' || data.no_relevant_data) {
+                // Show fallback message
+                addMessage('assistant', 'Sorry, I couldn\'t find any relevant data for that.');
+            } else {
+                // Add assistant message
+                addMessage('assistant', data.response);
+            }
         }).fail(function(error) {
             $('.loading').remove();
             const errorMessage = error.responseJSON?.error || 'An error occurred while processing your request.';
