@@ -1044,3 +1044,127 @@ input[type="file"]::-webkit-file-upload-button:hover {
     50% { opacity: 0.7; }
     100% { opacity: 1; }
 }
+
+/* Memory Anchor Toggle Button */
+#toggleMemoryAnchorBtn {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--purple-gradient);
+    border: 2px solid var(--cosmic-dust);
+    color: var(--cosmic-dust);
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all var(--transition-speed) ease;
+    box-shadow: 0 4px 12px var(--cosmic-shadow);
+}
+
+#toggleMemoryAnchorBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px var(--cosmic-shadow);
+    border-color: var(--star-blue);
+}
+
+#toggleMemoryAnchorBtn.open {
+    background: var(--star-blue);
+    transform: rotate(45deg);
+}
+
+/* Memory Anchor Drawer */
+.memory-anchor-drawer {
+    position: fixed;
+    right: -400px;
+    top: 0;
+    width: 400px;
+    height: 100vh;
+    background: var(--deep-space);
+    border-left: 1px solid var(--border-color);
+    padding: 2rem;
+    transition: right var(--transition-speed) ease;
+    z-index: 999;
+    overflow-y: auto;
+    box-shadow: -5px 0 15px var(--cosmic-shadow);
+}
+
+.memory-anchor-drawer.open {
+    right: 0;
+}
+
+.memory-anchor-content {
+    height: calc(100% - 60px);
+    overflow-y: auto;
+    padding-right: 1rem;
+}
+
+.memory-anchor-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.memory-anchor-content::-webkit-scrollbar-track {
+    background: var(--surface-color);
+    border-radius: 4px;
+}
+
+.memory-anchor-content::-webkit-scrollbar-thumb {
+    background: var(--cosmic-blue);
+    border-radius: 4px;
+}
+
+.memory-anchor-content::-webkit-scrollbar-thumb:hover {
+    background: var(--star-blue);
+}
+
+.anchor-section {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.anchor-section strong {
+    color: var(--star-blue);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.anchor-section p {
+    color: var(--cosmic-dust);
+    margin: 0;
+    line-height: 1.6;
+}
+
+#anchorResult {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s ease;
+}
+
+#anchorResult.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#anchorTerm {
+    color: var(--star-blue);
+    font-size: 1.5rem;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+/* Media Query for Mobile */
+@media (max-width: 768px) {
+    .memory-anchor-drawer {
+        width: 100%;
+        right: -100%;
+    }
+    
+    #toggleMemoryAnchorBtn {
+        bottom: 160px;
+    }
+}

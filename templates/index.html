@@ -137,6 +137,39 @@
         </button>
     </div>
 </div>
+
+<!-- Memory Anchor Toggle Button -->
+<button id="toggleMemoryAnchorBtn" class="memory-anchor-toggle-btn">
+    <i class="fas fa-anchor"></i>
+</button>
+
+<!-- Memory Anchor Drawer -->
+<div id="memoryAnchorDrawer" class="memory-anchor-drawer">
+    <h4 class="mb-3">Memory Anchor</h4>
+    <div class="memory-anchor-content">
+        <div class="mb-3">
+            <input type="text" id="conceptInput" class="form-control" placeholder="Enter a concept to anchor...">
+        </div>
+        <button id="generateAnchorBtn" class="btn btn-primary w-100">
+            <i class="fas fa-magic me-2"></i>Generate Anchor
+        </button>
+        <div id="anchorResult" class="mt-4 hidden">
+            <h5 id="anchorTerm" class="mb-3"></h5>
+            <div class="anchor-section">
+                <strong>Summary:</strong>
+                <p id="anchorSummary" class="mt-2"></p>
+            </div>
+            <div class="anchor-section">
+                <strong>Mnemonic:</strong>
+                <p id="anchorMnemonic" class="mt-2"></p>
+            </div>
+            <div class="anchor-section">
+                <strong>Example:</strong>
+                <p id="anchorExample" class="mt-2"></p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -462,6 +495,77 @@ document.getElementById("anchorForm").addEventListener("submit", async function 
     $(document).ready(function() {
         loadMessages();
         loadNotes();
+    });
+
+    // Memory Anchor Drawer Toggle
+    $('#toggleMemoryAnchorBtn').click(function() {
+        const drawer = $('#memoryAnchorDrawer');
+        const button = $(this);
+        
+        if (drawer.hasClass('open')) {
+            drawer.removeClass('open');
+            button.removeClass('open');
+        } else {
+            drawer.addClass('open');
+            button.addClass('open');
+            
+            // Close notes drawer if open
+            $('#notesDrawer').removeClass('open');
+            $('#toggleNotesBtn').removeClass('open');
+        }
+    });
+    
+    // Generate Anchor Button Click Handler
+    $('#generateAnchorBtn').click(function() {
+        const concept = $('#conceptInput').val().trim();
+        if (!concept) {
+            alert('Please enter a concept first.');
+            return;
+        }
+        
+        // Show loading state
+        $(this).prop('disabled', true);
+        $(this).html('<i class="fas fa-spinner fa-spin me-2"></i>Generating...');
+        
+        // Make API call to generate anchor
+        $.post('/generate-anchor', { concept: concept })
+            .done(function(response) {
+                // Update the result sections
+                $('#anchorTerm').text(response.term);
+                $('#anchorSummary').text(response.summary);
+                $('#anchorMnemonic').text(response.mnemonic);
+                $('#anchorExample').text(response.example);
+                
+                // Show the result with animation
+                $('#anchorResult').removeClass('hidden').addClass('visible');
+            })
+            .fail(function(error) {
+                alert('Failed to generate anchor. Please try again.');
+                console.error('Error:', error);
+            })
+            .always(function() {
+                // Reset button state
+                $('#generateAnchorBtn').prop('disabled', false);
+                $('#generateAnchorBtn').html('<i class="fas fa-magic me-2"></i>Generate Anchor');
+            });
+    });
+    
+    // Close drawers when clicking outside
+    $(document).click(function(event) {
+        if (!$(event.target).closest('#memoryAnchorDrawer, #toggleMemoryAnchorBtn, #notesDrawer, #toggleNotesBtn').length) {
+            $('#memoryAnchorDrawer').removeClass('open');
+            $('#toggleMemoryAnchorBtn').removeClass('open');
+            $('#notesDrawer').removeClass('open');
+            $('#toggleNotesBtn').removeClass('open');
+        }
+    });
+    
+    // Handle Enter key in concept input
+    $('#conceptInput').keypress(function(event) {
+        if (event.which === 13) {
+            event.preventDefault();
+            $('#generateAnchorBtn').click();
+        }
     });
 </script>
 {% endblock %} 
